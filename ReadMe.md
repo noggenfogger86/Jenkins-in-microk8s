@@ -19,12 +19,14 @@ microk8s.enable registry
 3. Build de images en push them to the registry:
 ```
 # Build images en push to registry of microk8s
-microk8s.docker build -t localhost:32000/jenkins:1.0 jenkins
-microk8s.docker push localhost:32000/jenkins:1.0
+docker pull jenkins/jenkins
+docker image tag jenkins/jenkins:latest localhost:32000/jenkins:1.0
+docker push localhost:32000/jenkins:1.0
 
-microk8s.docker build -t localhost:32000/jenkins-slave:1.0 jenkins-slave
-microk8s.docker push localhost:32000/jenkins-slave:1.0
+docker build -t localhost:32000/jenkins-slave:1.0 jenkins-slave
+docker push localhost:32000/jenkins-slave:1.0
 ```
+
 
 4. spin up jenkins deployment:
 ```
@@ -54,6 +56,18 @@ microk8s. kubectl describe pod jenkins-5fdbf5d7c5-dj2rq #e.g. 10.1.1.117:8080
 ```
 
 add new cloud:
+
+다 좋은데 잘 안되길래 몇 가지 수정했습니다.
+1. jenkins 는 더 이상 제공되지 않는 image라 jenkins/jenkins로 교체함
+2. jenkins 이미지 빌드를 해보면 아마 SSL 관련 오류가 납니다.
+   빌드를 하지 않고, 최신 버전 jenkins에 tag만 달아서 microk8s의 registry로 push 했습니다.
+3. config, deploy, service 의 apiVersion이 변경되었습니다. beta 딱지를 떼어드렸습니다.
+
+에러가 없기를 기원합니다.
+
+microk8s.kubectl scale deploy jenkins --replicas=0 && microk8s.kubectl scale deploy jenkins --replicas=1
+
+
 
 
 
